@@ -2,35 +2,35 @@ from rest_framework import serializers
 from .models import *
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Images
+        fields = '__all__'
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = '__all__'
+
+
 class AdviceSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True)
+    video = VideoSerializer(many=True)
+
     class Meta:
         model = Advice
         fields = '__all__'
 
-
-class AdviceSerializer2(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(max_length=200)
-    description = serializers.CharField(style={'base_template': 'textarea.html'})
-    image = serializers.IntegerField()
-    video = serializers.FileField()
-
     def create(self, validated_data):
-        title = validated_data.get('title')
-        description = validated_data.get('description')
-        advice = Advice.objects.create(title=title, description=description)
-        try:
-            image_file = validated_data.get('image')
-            image = Images.objects.create(image=image_file, advice=advice)
-        except Exception:
-            pass
-        try:
-            video_file = validated_data.get('video')
-            video = Video.objects.create(video_file=video_file, advice=advice)
-        except Exception:
-            pass
+        images_data = validated_data.pop('images')
+        videos_data = validated_data.pop('video')
+        advice = Advice.objects.create(**validated_data)
+
+        for image_data in images_data:
+            Images.objects.create(advice=advice, **image_data)
+
+        for video_data in videos_data:
+            Video.objects.create(advice=advice, **video_data)
 
         return advice
-
-
-
