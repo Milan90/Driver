@@ -15,7 +15,7 @@ class Advice(models.Model):
 
 class Images(models.Model):
     image = models.ImageField(upload_to="images/", blank=True)
-    advice = models.ForeignKey(Advice, on_delete=models.CASCADE)
+    advice = models.ForeignKey(Advice, related_name='images', on_delete=models.CASCADE)
     uploaded = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -24,7 +24,7 @@ class Images(models.Model):
 
 class Video(models.Model):
     video_file = models.FileField(upload_to="videos/", blank=True)
-    advice = models.ForeignKey(Advice, null=True, on_delete=models.CASCADE)
+    advice = models.ForeignKey(Advice, related_name='videos', on_delete=models.CASCADE)
     uploaded = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
