@@ -2,35 +2,39 @@ from rest_framework import serializers
 from .models import *
 
 
-class AdviceSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(allow_empty_file=True, use_url=True, default='')
-    video = serializers.FileField(allow_empty_file=True, use_url=True, default='')
+class AdviceSerializer(serializers.HyperlinkedModelSerializer):
+    image_or_video = serializers.FileField(allow_empty_file=True, use_url=True, default='')
 
     class Meta:
         model = Advice
+        fields = ('id', 'title', 'description', 'image_or_video',)
+
+
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
         fields = '__all__'
 
 
-"""
-    def create(self, validated_data):
-        print("validated data:", validated_data)
-        try:
-            image_data = validated_data.pop('image')
-        except KeyError:
-            image_data = None
-        try:
-            video_data = validated_data.pop('video')
-        except KeyError:
-            video_data = None
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizQuestion
+        fields = '__all__'
 
-        advice = Advice.objects.create(**validated_data)
 
-        print("image:", image_data)
-        if image_data:
-            Images.objects.create(advice=advice, image=image_data)
-        print("video:", video_data)
-        if video_data:
-            Video.objects.create(advice=advice, video_file=video_data)
+class QuizAnswersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answers
+        fields = '__all__'
 
-        return advice
-"""
+
+class ForumQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForumQuestion
+        fields = '__all__'
+
+
+class ForumAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForumAnswer
+        fields = '__all__'
